@@ -51,7 +51,6 @@ public class ClientConnection extends Thread {
 							e.printStackTrace();
 						}
 					}
-
 				}
 
 			});

@@ -94,7 +94,10 @@ public class UserRegistrationPanel extends JPanel {
 				
 				validateUserInput();
 				
-				//grey-out registration fields (make them un-editable)
+				/*
+				 * grey-out registration fields (make them un-editable)
+				 * now that user input has been validated.
+				 * */
 				greyOutRegistrationFields();
 				
 				//TODO
