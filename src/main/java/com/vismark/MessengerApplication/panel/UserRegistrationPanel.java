@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -101,7 +103,10 @@ public class UserRegistrationPanel extends JPanel {
 				greyOutRegistrationFields();
 				
 				//TODO
-				// attemptconntection()
+				boolean hostConnectionAlreadyExists = 
+						checkForExistingHostConnection(host, portNumber);
+				
+				System.out.println("Server connection already exists: " + hostConnectionAlreadyExists);
 				// once connection is made, gray-out all of the textfields, and change label on
 				// the connectionButton to
 				// read "Disconnect"
@@ -207,12 +212,27 @@ public class UserRegistrationPanel extends JPanel {
 	
 	
 	
-	public void attemptConnectionToServer() {
+	/**
+	 * Attempts a socket connection to the specified host and port.
+	 * If no connection is open, the method returns 'false' -- returns
+	 * 'true' otherwise.
+	 * 
+	 * @param host hostname to attempt connection to.
+	 * @param portNumber port number to attempt connection to.
+	 * @return
+	 */
+	private boolean checkForExistingHostConnection(String host, int portNumber) {
 		
-		//first, initialize
+		//Attempt the connection
+		try {
+			Socket socket = new Socket(host, portNumber);
+		} catch (UnknownHostException e) {
+			return false;
+		} catch (IOException e) {
+			return false;
+		}
 		
-		//this.serverConnectionSocket = new Socket(this.getHost(), this.por);
-		
+		return true;
 	}
 	
 	
