@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.vismark.MessengerApplication.networking.HostConnection;
+
 public class UserRegistrationPanel extends JPanel {
 
 	//Logger for debugging purposes:
@@ -36,6 +38,7 @@ public class UserRegistrationPanel extends JPanel {
 	
 	//Networking components
 	private Socket serverConnectionSocket = null;
+	private HostConnection hostConnection;
 	private int portNumber;
 	private String host;
 	
@@ -102,11 +105,21 @@ public class UserRegistrationPanel extends JPanel {
 				 * */
 				greyOutRegistrationFields();
 				
-				//TODO
+				/* TODO Button should also be greyed out.
+				 * TODO User should be notified that they are
+				 * the chat's host. 
+				 * */
+				
 				boolean hostConnectionAlreadyExists = 
 						checkForExistingHostConnection(host, portNumber);
 				
 				System.out.println("Server connection already exists: " + hostConnectionAlreadyExists);
+				
+				if(!hostConnectionAlreadyExists) {
+					//This client becomes the server, as well as a client.
+					hostConnection = new HostConnection(host, portNumber);
+					hostConnection.listenForConnections();
+				}
 				// once connection is made, gray-out all of the textfields, and change label on
 				// the connectionButton to
 				// read "Disconnect"
