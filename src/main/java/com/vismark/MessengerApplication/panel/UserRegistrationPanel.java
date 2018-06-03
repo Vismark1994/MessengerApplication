@@ -120,9 +120,26 @@ public class UserRegistrationPanel extends JPanel {
 					hostConnection = new HostConnection(host, portNumber);
 					hostConnection.listenForConnections();
 				}
-				// once connection is made, gray-out all of the textfields, and change label on
+				
+				/* Now, establish a client connection to the host.
+				 * This should happen regardless of whether the
+				 * client is the host or not.
+				 * */
+				try {
+					serverConnectionSocket = new Socket(host, portNumber);
+					System.out.println("Successfully connected to the server.");
+					
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				// TODO once connection is made, gray-out all of the textfields, and change label on
 				// the connectionButton to
 				// read "Disconnect"
+				
+				
 			}
 		});
 	}
@@ -237,15 +254,24 @@ public class UserRegistrationPanel extends JPanel {
 	private boolean checkForExistingHostConnection(String host, int portNumber) {
 		
 		//Attempt the connection
+		Socket socket = null;
+		
 		try {
-			Socket socket = new Socket(host, portNumber);
+			socket = new Socket(host, portNumber);
+			
+			try {
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}	
+			
+			return true;
 		} catch (UnknownHostException e) {
 			return false;
 		} catch (IOException e) {
 			return false;
-		}
+		} 
 		
-		return true;
 	}
 	
 	

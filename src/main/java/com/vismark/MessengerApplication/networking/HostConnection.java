@@ -3,6 +3,7 @@ package com.vismark.MessengerApplication.networking;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +26,7 @@ public class HostConnection {
 		this.hostName = hostName;
 		this.portNumber = portNumber;
 		this.listenForNewConnections = true;
+		clientConnections = new ArrayList<Socket>();
 	}
 	
 	/**
@@ -46,6 +48,7 @@ public class HostConnection {
 						try {
 							System.out.println("You are now the host server.");
 							Socket newClientConnection = serverSocket.accept();
+							System.out.println("A new connection has been made!: " + newClientConnection.getInetAddress());
 							clientConnections.add(newClientConnection);
 							System.out.println("Added a new connection from ip: " + newClientConnection.getInetAddress());
 						} catch (IOException e) {
