@@ -94,6 +94,9 @@ public class UserRegistrationPanel extends JPanel {
 				
 				validateUserInput();
 				
+				//grey-out registration fields (make them un-editable)
+				greyOutRegistrationFields();
+				
 				//TODO
 				// attemptconntection()
 				// once connection is made, gray-out all of the textfields, and change label on
@@ -101,6 +104,17 @@ public class UserRegistrationPanel extends JPanel {
 				// read "Disconnect"
 			}
 		});
+	}
+	
+	/**
+	 * Greys out all required user registration fields after validation
+	 * is complete.
+	 */
+	private void greyOutRegistrationFields() {
+		fullNameTextField.setEditable(false);
+		userNameTextField.setEditable(false);
+		hostAddressTextField.setEditable(false);
+		portTextField.setEditable(false);
 	}
 
 	public void validateUserInput() {
@@ -116,8 +130,6 @@ public class UserRegistrationPanel extends JPanel {
 			//If validation is successful, store data entered by user:
 			storeInput();
 			
-			
-			throw new ValidationFailedException();
 		} 
 		catch (ValidationFailedException e) {
 			

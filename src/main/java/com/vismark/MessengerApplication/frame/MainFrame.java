@@ -15,11 +15,15 @@ import javafx.scene.paint.Color;
 
 public class MainFrame extends JFrame {
 
+
 	public MainFrame(String frameName) {
 		super(frameName);
 		initializeFrame();
 	}
 
+	/**
+	 * Builds the chat frame and adds all the necessary pannels onto it.
+	 */
 	public void initializeFrame() {
 		this.setSize(900, 500);
 		this.setResizable(false);
