@@ -1,4 +1,4 @@
-package com.vismark.Humanity.frame;
+package com.vismark.MessengerApplication.frame;
 
 import java.awt.BorderLayout;
 
@@ -6,10 +6,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import com.vismark.Humanity.panel.ChatAreaPanel;
-import com.vismark.Humanity.panel.ConnectedUsersPanel;
-import com.vismark.Humanity.panel.UserInputPanel;
-import com.vismark.Humanity.panel.UserRegistrationPanel;
+import com.vismark.MessengerApplication.panel.ChatAreaPanel;
+import com.vismark.MessengerApplication.panel.ConnectedUsersPanel;
+import com.vismark.MessengerApplication.panel.UserInputPanel;
+import com.vismark.MessengerApplication.panel.UserRegistrationPanel;
 
 import javafx.scene.paint.Color;
 

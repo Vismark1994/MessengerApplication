@@ -1,4 +1,4 @@
-package com.vismark.Humanity.panel;
+package com.vismark.MessengerApplication.panel;
 
 import java.awt.Color;
 import java.awt.FlowLayout;

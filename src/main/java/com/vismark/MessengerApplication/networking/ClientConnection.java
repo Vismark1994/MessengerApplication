@@ -1,4 +1,4 @@
-package com.vismark.Humanity.networking;
+package com.vismark.MessengerApplication.networking;
 
 import java.io.BufferedReader;
 import java.io.IOException;

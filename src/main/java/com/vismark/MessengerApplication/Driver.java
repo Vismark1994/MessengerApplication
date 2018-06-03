@@ -1,8 +1,9 @@
-package com.vismark.Humanity;
+package com.vismark.MessengerApplication;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import com.vismark.Humanity.frame.MainFrame;
+
+import com.vismark.MessengerApplication.frame.MainFrame;
 
 public class Driver 
 {
