@@ -118,7 +118,7 @@ public class UserRegistrationPanel extends JPanel {
 				if(!hostConnectionAlreadyExists) {
 					//This client becomes the server, as well as a client.
 					hostConnection = new HostConnection(host, portNumber);
-					hostConnection.listenForConnections();
+					hostConnection.initializeHost();
 				}
 				
 				/* Now, establish a client connection to the host.
