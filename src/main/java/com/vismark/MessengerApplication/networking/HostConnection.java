@@ -14,11 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class will create a ServerSocker connection for clients to connect to.
- * Instead of having to manually launch a separate "server" application, the
- * first client to attempt a connection to any given host/port combination will
- * automatically become the Chat host. If the host leaves the conversation,
- * another user becomes the host. This process will continue such that the
+ * This class will create a ServerSocker connection for clients
+ * to connect to. Instead of having to manually launch a separate
+ * "server" application, the first client to attempt a connection 
+ * to any given host/port combination will automatically become
+ * the Chat host. If the host leaves the conversation, another 
+ * user becomes the host. This process will continue such that the
  * connection is not terminated until the last user exits the chat.
  */
 public class HostConnection {
@@ -78,13 +79,19 @@ public class HostConnection {
 							 * Broadcast to the entire chat room that a new user has joined the chat.
 							 */
 							// broadCastNewUser();
-							System.out.println("newConnection notification channels: " + newConnectionBroadcastChanels.size());
+							System.out.println("newConnection notification channels: "
+							    + newConnectionBroadcastChanels.size());
 
-							System.out.println("A new connection has been made!: " + newClientConnection.getInetAddress());
-							clientConnections.add(newClientConnection);
-							System.out.println("Added a new connection from ip: " + newClientConnection.getInetAddress());
+							System.out.println("A new connection has been made!: "
+							    + newClientConnection.getInetAddress());
 							
-							Thread listenForNewMessages = listenForNewMessages(newClientConnection);
+							clientConnections.add(newClientConnection);
+							
+							System.out.println("Added a new connection from ip: "
+							    + newClientConnection.getInetAddress());
+							
+							Thread listenForNewMessages
+							    = listenForNewMessages(newClientConnection);
 							
 							listenForNewMessages.start();
 							listenForNewMessages.join();
@@ -120,15 +127,26 @@ public class HostConnection {
 				 * Establish a BufferedReader stream for input from any of the clients.
 				 */
 				try {
-					InputStream inputStream = connectionWithClient.getInputStream();
-					InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-					BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+					InputStream inputStream
+					    = connectionWithClient
+					      .getInputStream();
+					
+					InputStreamReader inputStreamReader
+					    = new InputStreamReader(inputStream);
+					
+					BufferedReader bufferedReader
+					    = new BufferedReader(inputStreamReader);
 
 					// listen for new messages from the client
 					while (listenForNewConnections) {
 						System.out.println("Waiting for messages from the client.");
-						String newMessageReceived = bufferedReader.readLine();
-						System.out.println("Message received from client: " + newMessageReceived);
+						
+						String newMessageReceived
+						    = bufferedReader
+						      .readLine();
+						
+						System.out.println("Message received from client: "
+						    + newMessageReceived);
 					}
 
 				} catch (IOException e) {
@@ -141,17 +159,25 @@ public class HostConnection {
 	}
 
 	/**
-	 * Opens a "channel" (BufferedWriter) between the server and each individual
-	 * client, and stores all of these connections in a List. This allows the server
-	 * to notify each individual client of a new connection when a new client has
+	 * Opens a "channel" (BufferedWriter) between the 
+	 * server and each individualvclient,
+	 * and stores all of these connections in a List. 
+	 * This allows the server to notify each individual
+	 * client of a new connection when a new client has
 	 * joined the group chat.
 	 */
-	public void createNewConnectionNotificationChannel(Socket newClientSocket) {
+	public void createNewConnectionNotificationChannel(
+			Socket newClientSocket) {
 
 		try {
-			OutputStream outputStream = newClientSocket.getOutputStream();
-			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-			BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
+			OutputStream outputStream
+			    = newClientSocket.getOutputStream();
+			
+			OutputStreamWriter outputStreamWriter
+			    = new OutputStreamWriter(outputStream);
+			
+			BufferedWriter bufferedWriter
+			    = new BufferedWriter(outputStreamWriter);
 
 			newConnectionBroadcastChanels.add(bufferedWriter);
 		} catch (UnknownHostException e) {
@@ -162,7 +188,8 @@ public class HostConnection {
 	}
 
 	/**
-	 * Notifies all current clients that a new user has joined the chat room.
+	 * Notifies all current clients that a new user has
+	 * joined the chat room.
 	 */
 	public void broadcastNewConnection() {
 

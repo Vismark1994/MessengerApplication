@@ -26,6 +26,7 @@ public class ConnectionManager {
 	private MainFrame mainFrame;
 
 	// Networking components
+	private boolean isHost;
 	private Socket serverConnectionSocket = null;
 	private int portNumber;
 	private String host;
@@ -76,13 +77,14 @@ public class ConnectionManager {
 				boolean hostConnectionAlreadyExists = 
 						checkForExistingHostConnection(host, portNumber);
 				
-				System.out.println("Server connection already exists: "
-				    + hostConnectionAlreadyExists);
-				
 				if(!hostConnectionAlreadyExists) {
-					//This client becomes the server, as well as a client.
-					hostConnection = new HostConnection(host, portNumber);
-					hostConnection.initializeHost();
+					
+					/*
+					 * If no host connection exists, then this client is the
+					 * first user to join the groupchat.  By default, the
+					 * first user becomes the host of the groupchat.
+					 * */
+					setUpHostConnection(host, portNumber);
 				}
 				
 				/* Now, establish a client connection to the host.
@@ -108,6 +110,11 @@ public class ConnectionManager {
 				 * */
 			}
 		});
+	}
+	
+	private void setUpHostConnection(String host, int port) {
+		hostConnection = new HostConnection(host, portNumber);
+		hostConnection.initializeHost();
 	}
 	
 	/**
@@ -312,6 +319,14 @@ public void validateAllInputFields() throws ValidationFailedException {
 
 	public void setHost(String host) {
 		this.host = host;
+	}
+	
+	public void setIsHost(boolean yesOrNo) {
+		this.isHost = yesOrNo;
+	}
+	
+	public boolean getIsHost() {
+		return isHost;
 	}
 	
 }
