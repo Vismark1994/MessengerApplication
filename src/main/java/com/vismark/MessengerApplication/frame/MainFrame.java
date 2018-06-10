@@ -15,6 +15,9 @@ import javafx.scene.paint.Color;
 
 public class MainFrame extends JFrame {
 
+	private ConnectedUsersPanel connectedUsersPanel;
+	private ChatAreaPanel chatAreaPanel;
+	private UserInputPanel userInputPanel;
 
 	public MainFrame(String frameName) {
 		super(frameName);
@@ -34,20 +37,43 @@ public class MainFrame extends JFrame {
 		this.add(new UserRegistrationPanel(), BorderLayout.NORTH);
 		
 		//adding the list of connected users 
-		ConnectedUsersPanel connectedUsersPanel = new ConnectedUsersPanel();
+		connectedUsersPanel = new ConnectedUsersPanel();
 		add(connectedUsersPanel, BorderLayout.EAST);
 		
 		//adding chat-room JTextArea
-		ChatAreaPanel chatAreaPanel = new ChatAreaPanel();
+		chatAreaPanel = new ChatAreaPanel();
 		add(chatAreaPanel, BorderLayout.CENTER);
 		
 		//add user-input panel
-		UserInputPanel userInputPanel = new UserInputPanel();
+		userInputPanel = new UserInputPanel();
 		add(userInputPanel, BorderLayout.SOUTH);
 		
 		//set JFrame visible
 		this.setVisible(true);
+	}
 
+	public ConnectedUsersPanel getConnectedUsersPanel() {
+		return connectedUsersPanel;
+	}
+
+	public void setConnectedUsersPanel(ConnectedUsersPanel connectedUsersPanel) {
+		this.connectedUsersPanel = connectedUsersPanel;
+	}
+
+	public ChatAreaPanel getChatAreaPanel() {
+		return chatAreaPanel;
+	}
+
+	public void setChatAreaPanel(ChatAreaPanel chatAreaPanel) {
+		this.chatAreaPanel = chatAreaPanel;
+	}
+
+	public UserInputPanel getUserInputPanel() {
+		return userInputPanel;
+	}
+
+	public void setUserInputPanel(UserInputPanel userInputPanel) {
+		this.userInputPanel = userInputPanel;
 	}
 
 }
