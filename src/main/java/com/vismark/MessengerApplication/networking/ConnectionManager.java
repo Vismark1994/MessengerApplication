@@ -76,7 +76,8 @@ public class ConnectionManager {
 				boolean hostConnectionAlreadyExists = 
 						checkForExistingHostConnection(host, portNumber);
 				
-				System.out.println("Server connection already exists: " + hostConnectionAlreadyExists);
+				System.out.println("Server connection already exists: "
+				    + hostConnectionAlreadyExists);
 				
 				if(!hostConnectionAlreadyExists) {
 					//This client becomes the server, as well as a client.
@@ -100,10 +101,11 @@ public class ConnectionManager {
 					e.printStackTrace();
 				}
 				
-				// TODO once connection is made, gray-out all of the textfields, and change label on
-				// the connectionButton to
-				// read "Disconnect"
-				
+				/*
+				 * Once the connection is made, gray-out all of the textfields
+				 * and change the label on the connection button to read
+				 * "Disconnect".
+				 * */
 			}
 		});
 	}
@@ -117,7 +119,8 @@ public class ConnectionManager {
 	 * @param portNumber port number to attempt connection to.
 	 * @return
 	 */
-	private boolean checkForExistingHostConnection(String host, int portNumber) {
+	private boolean checkForExistingHostConnection(String host,
+			int portNumber) {
 		
 		//Attempt the connection
 		Socket socket = null;
@@ -181,13 +184,17 @@ public class ConnectionManager {
 		setHost(hostName);
 		setPortNumber(port);
 
-		LOGGER.log(Level.INFO, "stored port #: " + this.getPortNumber());
-		LOGGER.log(Level.INFO, "stored hostname: " + this.getHost());
+		LOGGER.log(Level.INFO, "stored port #: "
+		    + this.getPortNumber());
+		
+		LOGGER.log(Level.INFO, "stored hostname: "
+		    + this.getHost());
 	}
 	
 	public void validateUserInput() {
 		
-		// revert background of all fields to white, if appliclable (this will execute
+		// revert background of all fields to white,
+		// if appliclable (this will execute
 		// when re-trying after exception
 		revertBackgroundColors();
 
@@ -201,7 +208,8 @@ public class ConnectionManager {
 		} 
 		catch (ValidationFailedException e) {
 			
-			//TODO: GUI simply halts execution.  Invalid fields are highlighted in red, suggesting to the user
+			//TODO: GUI simply halts execution.
+			//Invalid fields are highlighted in red, suggesting to the user
 			//that he/she needs to try again.
 		}
 
