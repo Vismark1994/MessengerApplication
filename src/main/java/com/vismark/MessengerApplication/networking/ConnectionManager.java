@@ -84,8 +84,13 @@ public class ConnectionManager {
 					 * first user to join the groupchat.  By default, the
 					 * first user becomes the host of the groupchat.
 					 * */
+					setIsHost(true);
 					setUpHostConnection(host, portNumber);
 				}
+				
+				//set up the client connection with the host
+				System.out.println("Setting up the client connection.");
+				setupClientConnection();
 				
 				/* Now, establish a client connection to the host.
 				 * This should happen regardless of whether the
@@ -109,12 +114,18 @@ public class ConnectionManager {
 				 * "Disconnect".
 				 * */
 			}
+
 		});
 	}
 	
 	private void setUpHostConnection(String host, int port) {
 		hostConnection = new HostConnection(host, portNumber);
 		hostConnection.initializeHost();
+	}
+	
+	private void setupClientConnection() {
+		clientConnection = new ClientConnection(host, portNumber);
+		clientConnection.initializeClient();
 	}
 	
 	/**
@@ -129,9 +140,9 @@ public class ConnectionManager {
 	private boolean checkForExistingHostConnection(String host,
 			int portNumber) {
 		
-		//Attempt the connection
 		Socket socket = null;
 		
+		//Attempt the connection
 		try {
 			socket = new Socket(host, portNumber);
 			

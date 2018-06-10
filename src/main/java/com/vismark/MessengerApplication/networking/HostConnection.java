@@ -48,6 +48,10 @@ public class HostConnection {
 	 * between the server and each of the connected clients.
 	 */
 	public void initializeHost() {
+		
+		//should listen for new messages, receive them and
+		//propagate them to all the currently-connected
+		//clients.
 
 		try {
 			serverSocket = new ServerSocket(portNumber);
@@ -67,41 +71,43 @@ public class HostConnection {
 						
 						try {
 							// Stop and wait for new connections to be made
-							System.out.println("Waiting for a new connection...");
+							System.out.println("[Server]: Waiting for a new connection...");
 							Socket newClientConnection;
 							
 							newClientConnection = serverSocket.accept();
 							
-							// Create a new connectionBroadcastChannel
-							createNewConnectionNotificationChannel(newClientConnection);
+							// TODO Create a new connectionBroadcastChannel
+							//createNewConnectionNotificationChannel(newClientConnection);
 
 							/*
-							 * Broadcast to the entire chat room that a new user has joined the chat.
+							 * TODO Broadcast to the entire chat room that a new user has joined the chat.
 							 */
 							// broadCastNewUser();
-							System.out.println("newConnection notification channels: "
-							    + newConnectionBroadcastChanels.size());
+//							System.out.println("newConnection notification channels: "
+//							    + newConnectionBroadcastChanels.size());
 
-							System.out.println("A new connection has been made!: "
-							    + newClientConnection.getInetAddress());
+//							System.out.println("A new connection has been made!: "
+//							    + newClientConnection.getInetAddress());
 							
 							clientConnections.add(newClientConnection);
 							
-							System.out.println("Added a new connection from ip: "
+							System.out.println("[Server]: Added a new connection from ip: "
 							    + newClientConnection.getInetAddress());
 							
 							Thread listenForNewMessages
 							    = listenForNewMessages(newClientConnection);
 							
 							listenForNewMessages.start();
+							
+							System.out.println("Started listening for new messages.");
 							listenForNewMessages.join();
 							
 						} catch (IOException e) {
 							e.printStackTrace();
 						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}
-
+						} 
 					}
 				}
 			});
@@ -119,38 +125,50 @@ public class HostConnection {
 			
 	}
 
+	//last method executed.
 	private Thread listenForNewMessages(final Socket connectionWithClient) {
 		Thread listener = new Thread(new Runnable() {
+			
+			InputStream inputStream = null;
+			InputStreamReader inputStreamReader = null;
+			BufferedReader bufferedReader = null;
+			
 			public void run() {
-
 				/*
-				 * Establish a BufferedReader stream for input from any of the clients.
+				 * Establish a BufferedReader stream for input from the clients.
 				 */
 				try {
-					InputStream inputStream
+					inputStream
 					    = connectionWithClient
 					      .getInputStream();
 					
-					InputStreamReader inputStreamReader
+					inputStreamReader
 					    = new InputStreamReader(inputStream);
 					
-					BufferedReader bufferedReader
+					bufferedReader
 					    = new BufferedReader(inputStreamReader);
 
 					// listen for new messages from the client
 					while (listenForNewConnections) {
-						System.out.println("Waiting for messages from the client.");
+						System.out.println("[Server]: Waiting for messages from the client.");
 						
-						String newMessageReceived
-						    = bufferedReader
-						      .readLine();
+						String newMessageReceived = bufferedReader.readLine();
 						
-						System.out.println("Message received from client: "
+						System.out.println("[Server]: Message received from client: "
 						    + newMessageReceived);
 					}
 
 				} catch (IOException e) {
 					e.printStackTrace();
+				} finally {
+					try {
+						//Close input streams
+						inputStream.close();
+						inputStreamReader.close();
+						bufferedReader.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
