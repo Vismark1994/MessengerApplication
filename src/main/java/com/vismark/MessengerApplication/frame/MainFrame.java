@@ -18,6 +18,7 @@ public class MainFrame extends JFrame {
 	private ConnectedUsersPanel connectedUsersPanel;
 	private ChatAreaPanel chatAreaPanel;
 	private UserInputPanel userInputPanel;
+	private UserRegistrationPanel userRegistrationPanel;
 
 	public MainFrame(String frameName) {
 		super(frameName);
@@ -34,7 +35,8 @@ public class MainFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// adding user registration panel to the very top of the MainFrame
-		this.add(new UserRegistrationPanel(), BorderLayout.NORTH);
+		userRegistrationPanel = new UserRegistrationPanel();
+		this.add(userRegistrationPanel, BorderLayout.NORTH);
 		
 		//adding the list of connected users 
 		connectedUsersPanel = new ConnectedUsersPanel();
@@ -66,6 +68,10 @@ public class MainFrame extends JFrame {
 
 	public void setChatAreaPanel(ChatAreaPanel chatAreaPanel) {
 		this.chatAreaPanel = chatAreaPanel;
+	}
+
+	public UserRegistrationPanel getUserRegistrationPanel() {
+		return userRegistrationPanel;
 	}
 
 	public UserInputPanel getUserInputPanel() {
