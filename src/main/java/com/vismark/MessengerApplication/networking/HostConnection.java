@@ -7,11 +7,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * This class will create a ServerSocker connection for clients
@@ -23,15 +25,14 @@ import java.util.List;
  * connection is not terminated until the last user exits the chat.
  */
 public class HostConnection {
-
+	private static final Logger LOGGER
+	    = Logger.getLogger(HostConnection.class.getName());
 	private ServerSocket serverSocket;
 	private int portNumber;
 	private String hostName;
 	private volatile boolean listenForNewConnections;
 	private volatile boolean keepHostAlive;
 	private List<Socket> clientConnections;
-	private List<BufferedWriter> newConnectionBroadcastChanels;
-	private List<BufferedReader> newMessageListeneningChanels;
 
 	public HostConnection(String hostName, int portNumber) {
 		this.hostName = hostName;
@@ -39,7 +40,6 @@ public class HostConnection {
 		this.listenForNewConnections = true;
 		this.keepHostAlive = true;
 		clientConnections = new ArrayList<Socket>();
-		newConnectionBroadcastChanels = new ArrayList<BufferedWriter>();
 	}
 
 	/**
@@ -48,82 +48,58 @@ public class HostConnection {
 	 * between the server and each of the connected clients.
 	 */
 	public void initializeHost() {
-		
-		//should listen for new messages, receive them and
-		//propagate them to all the currently-connected
-		//clients.
 
 		try {
+			//create the server
 			serverSocket = new ServerSocket(portNumber);
 			/**
-			 * Listen for new connection attempts and add all successful connections into a
-			 * list of all connections.
+			 * Listen for new connection attempts and add all successful
+			 * connections into a list of all connections.
 			 */
 			
+			//TODO Each client should provide their username when
+			//connecting.
 			Thread listenForNewConnections = new Thread(new Runnable() {
 				public void run() {
-					while (keepHostAlive) {
+					Socket newClientConnection;
+					try {
+						//Pause and wait for new connections to be made
+						LOGGER.info("[Server]: Waiting for a new connection...");
 						
-						/*
-						 * TODO: This is not the best way to handle multiple clients.
-						 * a new thread should be spun up after each connection is made.
-						 * */
-						
-						try {
-							// Stop and wait for new connections to be made
-							System.out.println("[Server]: Waiting for a new connection...");
-							Socket newClientConnection;
-							
+						while(true) {
 							newClientConnection = serverSocket.accept();
-							
-							// TODO Create a new connectionBroadcastChannel
-							//createNewConnectionNotificationChannel(newClientConnection);
-
-							/*
-							 * TODO Broadcast to the entire chat room that a new user has joined the chat.
-							 */
-							// broadCastNewUser();
-//							System.out.println("newConnection notification channels: "
-//							    + newConnectionBroadcastChanels.size());
-
-//							System.out.println("A new connection has been made!: "
-//							    + newClientConnection.getInetAddress());
-							
 							clientConnections.add(newClientConnection);
 							
-							System.out.println("[Server]: Added a new connection from ip: "
-							    + newClientConnection.getInetAddress());
+							LOGGER.info("[Server]: Added a new connection from ip: "
+							    + newClientConnection.getInetAddress()
+							    + "Total chat participants is now: "
+							    + clientConnections.size());
 							
 							Thread listenForNewMessages
 							    = listenForNewMessages(newClientConnection);
 							
 							listenForNewMessages.start();
 							
-							System.out.println("Started listening for new messages.");
-							listenForNewMessages.join();
-							
-						} catch (IOException e) {
-							e.printStackTrace();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} 
+							System.out.println("returned from the listen for new messages from the client thread initiation.");
+						}
+						
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 				}
 			});
 			
+			/**
+			 * listen for new connections in its own thread.
+			 **/
 			listenForNewConnections.start();
-			//Is a join needed? Join will halt execution.
-			//Leaving it out for now.
-			
+			System.out.println("Returned from listenForNewClientConnections()"); //never returned from line 58
 		} catch(Exception e) {
 			System.out.println("Something went wrong.");
 		}
-		
-		
-			
-			
 	}
+
+	
 
 	//last method executed.
 	private Thread listenForNewMessages(final Socket connectionWithClient) {
@@ -150,12 +126,15 @@ public class HostConnection {
 
 					// listen for new messages from the client
 					while (listenForNewConnections) {
-						System.out.println("[Server]: Waiting for messages from the client.");
+						LOGGER.info("[Server]: Waiting for messages from the client.");
 						
 						String newMessageReceived = bufferedReader.readLine();
 						
-						System.out.println("[Server]: Message received from client: "
+						LOGGER.info("[Server]: Message received from client: "
 						    + newMessageReceived);
+						
+						//broadcast the newly received message
+						broadcastNewMessage(newMessageReceived);
 					}
 
 				} catch (IOException e) {
@@ -175,33 +154,25 @@ public class HostConnection {
 
 		return listener;
 	}
-
-	/**
-	 * Opens a "channel" (BufferedWriter) between the 
-	 * server and each individualvclient,
-	 * and stores all of these connections in a List. 
-	 * This allows the server to notify each individual
-	 * client of a new connection when a new client has
-	 * joined the group chat.
-	 */
-	public void createNewConnectionNotificationChannel(
-			Socket newClientSocket) {
-
-		try {
-			OutputStream outputStream
-			    = newClientSocket.getOutputStream();
-			
-			OutputStreamWriter outputStreamWriter
-			    = new OutputStreamWriter(outputStream);
-			
-			BufferedWriter bufferedWriter
-			    = new BufferedWriter(outputStreamWriter);
-
-			newConnectionBroadcastChanels.add(bufferedWriter);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+	
+	private void broadcastNewMessage(String messageToBroadcast) {
+		for(int i = 0; i < clientConnections.size(); i++) {
+				try {
+					//WRITING FROM THE HOST SERVER TO THE CLIENT SOCKET
+					Socket currentSocket = clientConnections.get(i);
+					PrintWriter printWriter;
+					
+					printWriter = new PrintWriter(currentSocket
+				    		.getOutputStream(), true);
+					
+					printWriter.println(messageToBroadcast);
+					
+					LOGGER.info("[Server]: Message " + "\"" + messageToBroadcast + "\"" + " broadcast to "
+								+ clientConnections.get(i).toString());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 	}
 

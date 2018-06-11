@@ -25,8 +25,15 @@ public class ChatAreaPanel extends JPanel {
 		chatRoomMessages = new JTextArea(8, 45);
 		chatRoomMessages.setEditable(false);
 		scrollPane = new JScrollPane(chatRoomMessages);
-
 		add(scrollPane, BorderLayout.CENTER);
+	}
+
+	public JTextArea getChatRoomMessages() {
+		return chatRoomMessages;
+	}
+
+	public void setChatRoomMessages(JTextArea chatRoomMessages) {
+		this.chatRoomMessages = chatRoomMessages;
 	}
 
 }

@@ -73,7 +73,6 @@ public class ConnectionManager {
 				 * TODO User should be notified that they are
 				 * the chat's host. 
 				 * */
-				
 				boolean hostConnectionAlreadyExists = 
 						checkForExistingHostConnection(host, portNumber);
 				
@@ -88,25 +87,12 @@ public class ConnectionManager {
 					setUpHostConnection(host, portNumber);
 				}
 				
-				//set up the client connection with the host
-				System.out.println("Setting up the client connection.");
-				setupClientConnection();
-				
 				/* Now, establish a client connection to the host.
 				 * This should happen regardless of whether the
 				 * client is the host or not.
 				 * */
-				try {
-					System.out.println("attempting server connection on: " 
-				        + host + " : " + portNumber);
-					serverConnectionSocket = new Socket(host, portNumber);
-					System.out.println("Successfully connected to the server.");
-					
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				LOGGER.info("Setting up the client connection.");
+				setupClientConnection();
 				
 				/*
 				 * Once the connection is made, gray-out all of the textfields
@@ -124,7 +110,8 @@ public class ConnectionManager {
 	}
 	
 	private void setupClientConnection() {
-		clientConnection = new ClientConnection(host, portNumber);
+		clientConnection = new ClientConnection(host, portNumber,
+				mainFrame.getChatAreaPanel().getChatRoomMessages());
 		clientConnection.initializeClient();
 	}
 	
