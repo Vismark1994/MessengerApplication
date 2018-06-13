@@ -1,4 +1,4 @@
-package com.vismark.Humanity;
+package com.vismark.MessengerApplication;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

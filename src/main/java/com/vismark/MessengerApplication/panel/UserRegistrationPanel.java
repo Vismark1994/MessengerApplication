@@ -1,11 +1,6 @@
 package com.vismark.MessengerApplication.panel;
 
-import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.Socket;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
@@ -32,12 +27,6 @@ public class UserRegistrationPanel extends JPanel {
 
 	private JButton connectionButton;
 	
-	//Networking components
-	private Socket serverConnectionSocket = null;
-	private int portNumber;
-	private String host;
-	
-
 	// Default constructor
 	public UserRegistrationPanel() {
 		setupUserRegistrationPanel();
@@ -86,120 +75,7 @@ public class UserRegistrationPanel extends JPanel {
 		// Connection JButton
 		connectionButton = new JButton("Connect");
 		add(connectionButton);
-
-		
-		// JButton configuration
-		connectionButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				
-				validateUserInput();
-				
-				//TODO
-				// attemptconntection()
-				// once connection is made, gray-out all of the textfields, and change label on
-				// the connectionButton to
-				// read "Disconnect"
-			}
-		});
 	}
-
-	public void validateUserInput() {
-	
-		// revert background of all fields to white, if appliclable (this will execute
-		// when re-trying after exception
-		revertBackgroundColors();
-
-		try {
-			
-			validateAllInputFields();
-			
-			//If validation is successful, store data entered by user:
-			storeInput();
-			
-			
-			throw new ValidationFailedException();
-		} 
-		catch (ValidationFailedException e) {
-			
-			//TODO: GUI simply halts execution.  Invalid fields are highlighted in red, suggesting to the user
-			//that he/she needs to try again.
-		}
-
-	}
-	
-	public void validateAllInputFields() throws ValidationFailedException {
-		
-		boolean allInputValuesPassedValidation = true;
-		
-		if (fullNameTextField.getText().length() < 2) {
-			// full name JTextField is invalid
-			fullNameTextField.setBackground(Color.RED);
-			
-			//allInputValuesPassedValidation fails
-			allInputValuesPassedValidation = false;
-		}
-		if (userNameTextField.getText().length() == 0) {
-			// username JtextField value is invalid
-			userNameTextField.setBackground(Color.RED);
-			
-			//allInputValuesPassedValidation fails
-			allInputValuesPassedValidation = false;
-		}
-		if (hostAddressTextField.getText().length() < 7) {
-			// hostAddress JtextField value is invalid
-			hostAddressTextField.setBackground(Color.RED);
-			
-			//allInputValuesPassedValidation fails
-			allInputValuesPassedValidation = false;
-		}
-		if (Integer.parseInt((portTextField.getText())) < 1) {
-			// port JtextField value is invalid
-			portTextField.setBackground(Color.RED);
-			
-			//allInputValuesPassedValidation fails
-			allInputValuesPassedValidation = false;
-		}
-		
-		if(!allInputValuesPassedValidation)
-			throw new ValidationFailedException();
-		
-		
-	}
-	
-	public void storeInput() {
-		
-		setHost(this.getHostAddressTextField().getText());
-		setPortNumber(Integer.parseInt(this.getPortTextField().getText()));
-		
-		LOGGER.log(Level.INFO, "stored port #: " + this.getPortNumber());
-		LOGGER.log(Level.INFO, "stored hostname: " + this.getHost());
-	}
-
-	private class ValidationFailedException extends Exception {
-
-		public ValidationFailedException() {
-			
-		}
-
-	}
-
-	public void revertBackgroundColors() {
-		fullNameTextField.setBackground(Color.white);
-		userNameTextField.setBackground(Color.white);
-		hostAddressTextField.setBackground(Color.white);
-		portTextField.setBackground(Color.white);
-	}
-	
-	
-	
-	public void attemptConnectionToServer() {
-		
-		//first, initialize
-		
-		//this.serverConnectionSocket = new Socket(this.getHost(), this.por);
-		
-	}
-	
 	
 	public JLabel getFullNameLabel() {
 		return fullNameLabel;
@@ -235,18 +111,6 @@ public class UserRegistrationPanel extends JPanel {
 
 	public JButton getConnectionButton() {
 		return connectionButton;
-	}
-
-	public Socket getServerConnectionSocket() {
-		return serverConnectionSocket;
-	}
-
-	public int getPortNumber() {
-		return portNumber;
-	}
-
-	public String getHost() {
-		return host;
 	}
 
 	public void setFullNameLabel(JLabel fullNameLabel) {
@@ -285,18 +149,4 @@ public class UserRegistrationPanel extends JPanel {
 		this.connectionButton = connectionButton;
 	}
 
-	public void setServerConnectionSocket(Socket serverConnectionSocket) {
-		this.serverConnectionSocket = serverConnectionSocket;
-	}
-
-	public void setPortNumber(int portNumber) {
-		this.portNumber = portNumber;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
 }
-
-	
