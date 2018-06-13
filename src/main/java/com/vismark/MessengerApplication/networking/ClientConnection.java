@@ -9,23 +9,23 @@ import java.util.logging.Logger;
 
 import javax.swing.JTextArea;
 
+import com.vismark.MessengerApplication.frame.MainFrame;
+
 public class ClientConnection {
-	
-	private static final Logger LOGGER
-	    = Logger.getLogger(ClientConnection.class.getName());
 
-	private static Socket connectionToServer;
-	private static PrintWriter out;
-	private static String hostname;
-	private static int port;
-	private JTextArea chatArea;
+	private static final Logger LOGGER = Logger.getLogger(ClientConnection.class.getName());
 
-	public ClientConnection(String hostname, int port, JTextArea chatArea) {
+	private Socket connectionToServer;
+	private PrintWriter out;
+	private BufferedReader bufferedReader;
+	private String hostname;
+	private int port;
+	private MainFrame mainFrame;
+
+	public ClientConnection(String hostname, int port, MainFrame mainFrame) {
 		this.hostname = hostname;
 		this.port = port;
-		
-		//Shows the chat room conversation
-		this.chatArea = chatArea;
+		this.mainFrame = mainFrame;
 	}
 
 	public void initializeClient() {
@@ -35,7 +35,7 @@ public class ClientConnection {
 			out = new PrintWriter(connectionToServer.getOutputStream(), true);
 			Thread listenForMessagesFromServer = listenForMessagesFromServer();
 			Thread listenForKeyboardInput = listenForKeyboardInput();
-			
+
 			listenForMessagesFromServer.start();
 			LOGGER.info("starting to listen for msgs from keyboard...");
 			listenForKeyboardInput.start();
@@ -44,24 +44,41 @@ public class ClientConnection {
 		}
 
 	}
-	
+
 	private Thread listenForMessagesFromServer() {
 		Thread listenerThread = new Thread(new Runnable() {
 			public void run() {
 				String messageFromServer;
 				try {
-					BufferedReader bufferedReader = new BufferedReader(
-							new InputStreamReader(connectionToServer.getInputStream()));
+					bufferedReader = new BufferedReader(
+							new InputStreamReader(connectionToServer
+									.getInputStream()));
 					while (true) {
-						LOGGER.info("[Client]: Waiting for a message from the server...");
-						messageFromServer = bufferedReader.readLine();
-						LOGGER.info("[Client]: Message from server: " + messageFromServer);
+						LOGGER.info("[Client]: Waiting for a message "
+								+ "from the server...");
 						
-						//append the new message to the chat area for this user
-						LOGGER.info("Appending the following message to the chat area: " + messageFromServer);
-						chatArea.append(messageFromServer);
+						try {
+							messageFromServer = bufferedReader.readLine();
+							LOGGER.info("[Client]: Message from server: "
+							    + messageFromServer);
+							
+							//append the new message to the chat area for this user
+							LOGGER.info("Appending the following message"
+									+ "to the chat area: " + messageFromServer);
+							JTextArea chatArea
+							    = mainFrame.getChatAreaPanel().getChatRoomMessages();
+							
+							chatArea.append(messageFromServer + '\n');
+						} catch (Exception e) {
+							out.close();
+							bufferedReader.close();
+							connectionToServer.close();
+							System.out.println("[Server]: Breaking out of new message listener loop.");
+							break;
+						}
 					}
-				} catch (IOException e) {
+				}
+			 catch (IOException e) {
 					e.printStackTrace();
 				} finally {
 					try {
@@ -73,29 +90,68 @@ public class ClientConnection {
 			}
 
 		});
-		
-		return listenerThread;
+
+	return listenerThread;
+
 	}
-	
+
 	private Thread listenForKeyboardInput() {
 		Thread listenerThread = new Thread(new Runnable() {
+			
+			String myUsername = mainFrame
+					.getUserRegistrationPanel()
+					.getUserNameTextField().getText();
+			
 			public void run() {
 				//always listen for input from keyboard
 				while (true) {	
 					BufferedReader bufferedReader
 					    = new BufferedReader(new InputStreamReader(System.in));
-					String myMessage = "";
+					String myMessage = myUsername;
 					try {
 						myMessage = bufferedReader.readLine();
 					} catch (IOException e) {
-						e.printStackTrace();
+						try {
+							bufferedReader.close();
+						} catch (IOException io) {
+							e.printStackTrace();
+						}
+						out.close();
+					} 
+					
+					
+					if("shut_down".equals(myMessage)) {
+						try {
+							out.println("shut_down");
+							bufferedReader.close();
+							out.close();
+							System.out.println("[Client]: Input and output channels closed.");
+							System.out.println("[Client]: Breaking out of new message listener loop");
+							break;
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
 					}
-					out.println(myMessage);
+					
+					else
+						out.println(myUsername + ": " + myMessage);
 				}
 			}
 		});
 		return listenerThread;
 	}
-	
-}
 
+	/*
+	 * @param socket The socket to probe for liveness.
+	 * 
+	 * @return whether the provided socket is open or not.
+	 */
+	private boolean isLiveConnection(Socket socket) {
+		if (socket.isClosed())
+			return false;
+		else
+			return true;
+	}
+
+}

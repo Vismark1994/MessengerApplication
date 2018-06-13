@@ -1,16 +1,12 @@
 package com.vismark.MessengerApplication.networking;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -57,20 +53,20 @@ public class HostConnection {
 			 * connections into a list of all connections.
 			 */
 			
-			//TODO Each client should provide their username when
-			//connecting.
 			Thread listenForNewConnections = new Thread(new Runnable() {
 				public void run() {
 					Socket newClientConnection;
 					try {
 						//Pause and wait for new connections to be made
-						LOGGER.info("[Server]: Waiting for a new connection...");
+						LOGGER.info("[Server]: Waiting for a "
+								+ "new connection...");
 						
 						while(true) {
 							newClientConnection = serverSocket.accept();
 							clientConnections.add(newClientConnection);
-							
-							LOGGER.info("[Server]: Added a new connection from ip: "
+							System.out.println("A new connection was just added");
+							LOGGER.info("[Server]: Added a new connection "
+									+ "from ip: "
 							    + newClientConnection.getInetAddress()
 							    + "Total chat participants is now: "
 							    + clientConnections.size());
@@ -80,7 +76,9 @@ public class HostConnection {
 							
 							listenForNewMessages.start();
 							
-							System.out.println("returned from the listen for new messages from the client thread initiation.");
+							System.out.println("returned from "
+									+ "the listen for new messages "
+									+ "from the client thread initiation.");
 						}
 						
 					} catch (IOException e) {
@@ -125,16 +123,43 @@ public class HostConnection {
 					    = new BufferedReader(inputStreamReader);
 
 					// listen for new messages from the client
-					while (listenForNewConnections) {
-						LOGGER.info("[Server]: Waiting for messages from the client.");
+					while (true) {
+						LOGGER.info("[Server]: Waiting for messages "
+								+ "from the client.");
 						
-						String newMessageReceived = bufferedReader.readLine();
+						/*first check to make sure the connection is even open.
+						 * if not, remove the current connection out of the list
+						 * of connections, close the buffered readers, 
+						 * and break out of the while loop to stop waiting for
+						 * new messages from the client.
+						*/
+						String newMessageReceived = null;
+						
+						if(isLiveConnection(connectionWithClient)) {
+							newMessageReceived
+						    = bufferedReader.readLine();
 						
 						LOGGER.info("[Server]: Message received from client: "
 						    + newMessageReceived);
 						
-						//broadcast the newly received message
-						broadcastNewMessage(newMessageReceived);
+						//if shutdown signal is received, stop listening.
+						if("shut_down".equals(newMessageReceived)) {
+							inputStream.close();
+							inputStreamReader.close();
+							bufferedReader.close();
+							System.out.println("[Server]: shutting connection down.");
+						}
+						else {
+							//broadcast the newly received message
+							broadcastNewMessage(newMessageReceived);
+						}
+						
+						}
+						else {
+							System.out.println("[Server]: Connection is not live. Breaking.");
+							break;
+						}//not a live connection. don't try to lsten for new msgs.
+
 					}
 
 				} catch (IOException e) {
@@ -155,25 +180,48 @@ public class HostConnection {
 		return listener;
 	}
 	
+	//TODO Should not attempt to broadcast a new message to
+	//a connection that has been closed.
 	private void broadcastNewMessage(String messageToBroadcast) {
 		for(int i = 0; i < clientConnections.size(); i++) {
 				try {
-					//WRITING FROM THE HOST SERVER TO THE CLIENT SOCKET
 					Socket currentSocket = clientConnections.get(i);
-					PrintWriter printWriter;
 					
-					printWriter = new PrintWriter(currentSocket
-				    		.getOutputStream(), true);
+					if(isLiveConnection(currentSocket)) {
+						PrintWriter printWriter;
+						
+						printWriter = new PrintWriter(currentSocket
+					    		.getOutputStream(), true);
+						
+						printWriter.println(messageToBroadcast);
+						
+						LOGGER.info("[Server]: Message " + "\"" 
+						    + messageToBroadcast + "\"" + " broadcast to "
+							+ clientConnections.get(i).toString());
+					}
+					else
+					{
+						//remove current socket from the list of connections
+						clientConnections.remove(i);
+						System.out.println("Just removed index " + i
+								+ " from the list of connections.");
+					}
 					
-					printWriter.println(messageToBroadcast);
-					
-					LOGGER.info("[Server]: Message " + "\"" + messageToBroadcast + "\"" + " broadcast to "
-								+ clientConnections.get(i).toString());
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		}
+	}
+	
+	/**
+	 * @param socket The socket to probe for liveness.
+	 * @return whether the provided socket is open or not.
+	 */
+	private boolean isLiveConnection(Socket socket) {
+		if(socket.isClosed())
+			return false;
+		else
+			return true;
 	}
 
 	/**

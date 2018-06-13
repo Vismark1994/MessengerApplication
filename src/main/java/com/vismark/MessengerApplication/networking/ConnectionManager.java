@@ -85,7 +85,8 @@ public class ConnectionManager {
 					 * */
 					setIsHost(true);
 					setUpHostConnection(host, portNumber);
-				}
+				} else
+					setIsHost(false);
 				
 				/* Now, establish a client connection to the host.
 				 * This should happen regardless of whether the
@@ -110,8 +111,7 @@ public class ConnectionManager {
 	}
 	
 	private void setupClientConnection() {
-		clientConnection = new ClientConnection(host, portNumber,
-				mainFrame.getChatAreaPanel().getChatRoomMessages());
+		clientConnection = new ClientConnection(host, portNumber,mainFrame);
 		clientConnection.initializeClient();
 	}
 	
