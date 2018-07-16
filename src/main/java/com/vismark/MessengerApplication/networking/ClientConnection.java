@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.swing.JTextArea;
@@ -21,6 +22,7 @@ public class ClientConnection {
 	private String hostname;
 	private int port;
 	private MainFrame mainFrame;
+	private final UUID clientUUID = UUID.randomUUID();
 
 	public ClientConnection(String hostname, int port, MainFrame mainFrame) {
 		this.hostname = hostname;
@@ -32,7 +34,10 @@ public class ClientConnection {
 		try {
 			LOGGER.info("Initializing Client...");
 			connectionToServer = new Socket(hostname, port);
+			
+			//Give the host the client's uuid
 			out = new PrintWriter(connectionToServer.getOutputStream(), true);
+			
 			Thread listenForMessagesFromServer = listenForMessagesFromServer();
 			Thread listenForKeyboardInput = listenForKeyboardInput();
 

@@ -4,8 +4,10 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,6 +34,7 @@ public class ConnectionManager {
 	private String host;
 	private ClientConnection clientConnection;
 	private HostConnection hostConnection;
+	private UUID clientUUID = UUID.randomUUID();
 
 	public ConnectionManager() {
 		initializeGUIComponents();
@@ -134,7 +137,25 @@ public class ConnectionManager {
 			socket = new Socket(host, portNumber);
 			
 			try {
-				socket.close();
+				
+				/*A connection was made to an already-existing host. Send a shutdown signal (which will be
+				received by the host -- at which point the host will close the connection on their end.
+				Then, proceed to close the socket connection on the client's end.
+				*/
+				
+				PrintWriter printWriter
+				    = new PrintWriter(socket.getOutputStream(), true);
+				
+				printWriter.println("UUID: "+ clientUUID);
+				
+				printWriter.println("SHUT_DOWN");
+				
+  				socket.close();
+  				printWriter.close();
+  				
+  				System.out.println("[Client] Client sending shut down signal after"
+  						+ " probing for an existing connection.");
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}	
