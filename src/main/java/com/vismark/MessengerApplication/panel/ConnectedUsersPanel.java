@@ -1,7 +1,6 @@
 package com.vismark.MessengerApplication.panel;
 
 import java.awt.Color;
-import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;

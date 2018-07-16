@@ -143,11 +143,13 @@ public class HostConnection {
 						    + newMessageReceived);
 						
 						//if shutdown signal is received, stop listening.
-						if("shut_down".equals(newMessageReceived)) {
+						if("SHUT_DOWN".equals(newMessageReceived)) {
 							inputStream.close();
 							inputStreamReader.close();
 							bufferedReader.close();
-							System.out.println("[Server]: shutting connection down.");
+							System.out.println("[Server]: shutting connection down."); 
+							System.out.println("[Server]: Total connections is now "
+									+ clientConnections.size());
 						}
 						else {
 							//broadcast the newly received message

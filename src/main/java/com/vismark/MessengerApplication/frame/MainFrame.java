@@ -3,15 +3,11 @@ package com.vismark.MessengerApplication.frame;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
 
 import com.vismark.MessengerApplication.panel.ChatAreaPanel;
 import com.vismark.MessengerApplication.panel.ConnectedUsersPanel;
 import com.vismark.MessengerApplication.panel.UserInputPanel;
 import com.vismark.MessengerApplication.panel.UserRegistrationPanel;
-
-import javafx.scene.paint.Color;
 
 public class MainFrame extends JFrame {
 
